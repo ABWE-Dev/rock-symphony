@@ -6,17 +6,18 @@
       <a class="btn btn-default btn-xs {% if inactiveParamVal == '1' or InitialActive == 0 and PainactiveParamVal == null %}active{% endif %}" href='{{ 'Global=''' | Page:'Path=''' }}?{{ InactiveParameter }}=1'>All</a>
     </div>
     {% endif -%}
-    Groups
+    (<i class="fa fa-asterisk"></i>indicates primary partnership )
   </div>
 
   {% assign groupCount = Groups | Size %}
 
   {% if groupCount == 0 %}
-  <div class="margin-all-md"> No Groups Available To List</div>
+  <div class="margin-all-md">No Primary or Secondary Partnerships</div>
   {% endif %}
 
+  {% assign sortedGroups = Groups | OrderBy:'Group.Name' %}
   <ul class="list-group list-group-panel">
-    {% for group in Groups %}
+    {% for group in sortedGroups %}
 
     {% capture isLeaderIcon -%}
     {% if group.IsLeader -%}
@@ -25,7 +26,7 @@
     {% endcapture -%}
 
     {% capture content %}
-    {{ group.Group.Name }} <small>({{ group.Role }}{{ isLeaderIcon }})</small>
+    {{ group.Group.Name }} <small>{{ isLeaderIcon }}</small>
     {% if group.IsLeader -%}
     {% assign pending = 0 -%}
     {% for member in group.Group.Members -%}
