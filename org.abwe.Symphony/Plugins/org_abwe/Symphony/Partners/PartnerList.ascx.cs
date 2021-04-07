@@ -305,7 +305,7 @@ namespace RockWeb.Plugins.org_abwe.Symphony
                         PartnerOrganizationId = p.ParentGroup.GroupTypeId == partnerOrganizationGroupType.Id ? p.ParentGroup.Id : 0,
                         PartnerName = p.Name,
                         PartnerOrganization = p.ParentGroup.GroupTypeId == partnerOrganizationGroupType.Id ? p.ParentGroup.Name : "",
-                        PrimaryMinistry = p.GetAttributeValue("PrimaryMinistry"),
+                        PrimaryMinistry = p.Description,
                         PrimaryCountry = p.GetAttributeValue("PrimaryCountryOfService") == "" ? "" : definedValueService.Get(p.GetAttributeValue("PrimaryCountryOfService").AsGuid()).Description,
                         LatestUpdateDate = lud,
                         IsMyPartner = Convert.ToBoolean(p.Members
