@@ -8,7 +8,7 @@ using Rock.Plugin;
 
 namespace org.abwe.Symphony.Migrations
 {
-    [MigrationNumber(4, "1.6.0")]
+    [MigrationNumber(4, "1.12.0")]
     class Prerequisites : Migration
     {
         public override void Up()

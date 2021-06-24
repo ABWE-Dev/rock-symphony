@@ -12,6 +12,10 @@
       <h2 class="panel-title pull-left">
         <i class='{{ opportunity.IconCssClass }}'></i> {{ opportunity.PublicName }}
       </h2>
+      <a type="button" class="btn btn-primary pull-right" data-toggle="tootop" data-placement="botton" title="Edit Opportunity" 
+        href="/EditPartnerOpportunity?ConnectionOpportunityId={{ opportunity.Id}}&ConnectionTypeId=2">
+        <i class="fa fa-edit"></i>
+      </a>
     </div>
     <div class="panel-body">
       <div class="col-md-2">

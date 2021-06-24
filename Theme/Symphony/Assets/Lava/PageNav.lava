@@ -20,6 +20,7 @@
 			{%- endif -%}
 				{%- if childPage.DisplayChildPages and childPage.Pages != empty -%}
                     <i class="{{ childPage.IconCssClass }}"></i>
+                    <p class="text-white"><small>{{ childPage.Title }}</small></p>
                     <ul class="nav nav-childpages">
                         <li class="title">{{ childPage.Title }}</li>
 						{%- for grandchildPage in childPage.Pages -%}
@@ -38,8 +39,14 @@
                         {%- endfor -%}
                     </ul>
                 {%- else -%}
-                    <a role="menu-item" href="{{ childPage.Url }}" data-toggle="tooltip"  data-container="body" data-placement="right" title="{{ childPage.Title }}">
+                    <a role="menu-item" href="{{ childPage.Url }}" data-toggle="tooltip"  data-container="body" data-placement="right" title="{{ childPage.Description }}">
                         <i class="{{ childPage.IconCssClass }}"></i>
+                        <p class="text-white"><small>{{ childPage.Title }}</small></p>
+                        {% comment %}
+                        {% if childPage.Title == 'Applicants' %}
+                            <span class="badge badge-danger countbadge">1</span>
+                        {% endif %}
+                        {% endcomment %}
                     </a>
                 {%- endif -%}
             </li>

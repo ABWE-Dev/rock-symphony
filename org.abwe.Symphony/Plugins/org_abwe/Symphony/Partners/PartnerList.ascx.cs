@@ -332,14 +332,6 @@ namespace RockWeb.Plugins.org_abwe.Symphony
             
         }
 
-        /// <summary>
-        /// Shows the detail form.
-        /// </summary>
-        /// <param name="id">The id.</param>
-        protected void ShowDetailForm( int id )
-        {
-            NavigateToLinkedPage( "DetailPage", "GroupId", id );
-        }
 
         /// <summary>
         /// Resolves the values.

@@ -231,6 +231,11 @@ textarea,
     }
   }
 }
+.countbadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
 
 .tooltip {
   &.top {
@@ -1132,7 +1137,7 @@ body.nav-open {
       > a > i,
       > i {
         display: block;
-        padding: 24px 0;
+        padding: 24px 0 0 0;
         font-size: @navbarside-width * .4;
         color: @white;
 
@@ -1564,6 +1569,45 @@ body.navbar-side-open {
   }
 }
 
+.metric {
+  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.metric h5 {
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric .value {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1em;
+}
+
+.metric .value small {
+  display: block;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1em;
+}
+
+.metric .icon {
+  float: right;
+  opacity: .3;
+  font-size: 65px;
+  border-radius: 0;
+  width: 85px;
+  height: 65px;
+}
+
+
 .btn-mergefield {
   font-weight: @fa-theme-weight;
 }
@@ -1604,6 +1648,23 @@ body.navbar-side-open {
     transform: translate3d(0, 0, 0);
   }
 
+}
+
+[data-toggle="collapse"]:after {
+  display: inline-block;
+  //font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  content: "\005E";
+  transform: rotate(0deg);
+  transition: all linear 0.25s;
+  float: right;
+}
+
+[data-toggle="collapse"].collapsed:after {
+  transform: rotate(90deg);
 }
 
 // Move the debug timing table to the right so it's not hidden by the admin theme's left nav
