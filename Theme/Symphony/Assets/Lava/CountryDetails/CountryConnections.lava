@@ -1,0 +1,74 @@
+{% assign cID = PageParameter.Id %}
+{% definedvalue id:'{{cID}}' %}
+
+<div class="d-flex flex-column flex-sm-row align-items-stretch">
+    <div class="badge btn flex-grow-1 pt-2 pb-2 pl-4 pr-4 m-2" style="background-color:#979796" data-toggle="modal" data-target="#PartnersModal">
+        <div class="d-flex justify-content-between align-items-center">
+            <i class="badge-icon fa fa-people-carry"></i>
+            <div class="text-right">
+                <h6 class="mt-0 mb-0 font-weight-light">Number of Partners</h6>
+                {% sql return:'pcount' %}
+                    SELECT COUNT(*) AS numPartners 
+                    FROM [Group] g, [AttributeValue] av, [DefinedValue] dv
+                    WHERE g.[Id] = av.[EntityId] AND av.[AttributeId] = 5381
+                      AND av.[Value] = dv.[Guid]
+                      AND dv.[DefinedTypeId] = 45 AND dv.[Id]={{ cID }}
+                {% endsql %}
+                <h5 class="mt-0 mb-0 ml-1">{{ pcount[0].numPartners }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="badge btn flex-grow-1 pt-2 pb-2 pl-4 pr-4 m-2" style="background-color:#979796" data-toggle="modal" data-target="#TeamMembersModal">
+        <div class="d-flex justify-content-between align-items-center">
+            <i class="badge-icon fa fa-users"></i>
+            <div class="text-right">
+                <h6 class="mt-0 mb-0 font-weight-light">Number of Team Members</h6>
+                <h5 class="mt-0 mb-0 ml-1">0</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade border modal-lg" id="PartnersModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h3>Partners serving in {{ definedvalue.Description }}</h3>
+            </div>
+            <div class="modal-body">
+                {% sql return:'plist' %}
+                    SELECT g.[Id], g.[Name], g.[IsActive] 
+                    FROM [Group] g, [AttributeValue] av, [DefinedValue] dv
+                    WHERE g.[Id] = av.[EntityId] AND av.[AttributeId] = 5381
+                      AND av.[Value] = dv.[Guid]
+                      AND dv.[DefinedTypeId] = 45 AND dv.[Id]={{ cID }}
+                {% endsql %}
+                {% for p in plist %}
+                    <ul>
+                        <li><a href="~/Partnership?GroupId={{ p.Id }}">{{p.Name}}</a></li>
+                    </ul>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade border modal-lg" id="TeamMembersModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h3>Team Members living in {{ definedvalue.Description }}</h3>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% enddefinedvalue %}

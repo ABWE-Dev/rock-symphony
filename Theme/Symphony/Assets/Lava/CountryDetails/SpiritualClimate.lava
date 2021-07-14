@@ -1,0 +1,91 @@
+<h3>Spiritual Climate</h3>
+
+{% assign cID = PageParameter.Id %}
+{% definedvalue id:'{{cID}}' %}
+    {% assign fipsCode = definedvalue | Attribute:'FIPS10-4CountryCode' %}
+{% enddefinedvalue %}    
+{% capture jpResults %}
+    {%  execute import:'RestSharp,Newtonsoft.Json,Newtonsoft.Json.Linq' %}
+        string countryCode = "{{ fipsCode }}";
+        var client = new RestClient("https://api.joshuaproject.net");
+        var request = new RestRequest("v1/countries/" + countryCode  + ".json?api_key=jbdO8Gt0EpS2");
+        var response = client.Get(request);
+        return response.Content;
+    {% endexecute %}
+{% endcapture %}
+{% assign jpResultsJSON = jpResults | ReplaceFirst:'[','' | ReplaceLast:']','' | FromJSON %}
+
+<div class="card">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="ml-2 mr-2">
+                <h6>Total Population</h6>
+                <h4><b>{{ jpResultsJSON.Population | Format:'#,#' }} </b></h4>
+                <h6 class="mt-5">Number of People Groups</h6>
+                <h4><b>{{ jpResultsJSON.CntPeoples }}</b></h4>
+                <h6 class="mt-5">Number of Unreached People Groups</h6>
+                <h4><b>{{ jpResultsJSON.CntPeoplesLR }}</b></h4>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="ml-2 mr-2">
+                <canvas id="religionDistribution"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const data = {
+    labels:  ['Buddhist',
+            'Christian/Catholic',
+            'Ethnic Religions',
+            'Hindu',
+            'Islam',
+            'Non-Religious',
+            'Other',
+            'Unknown'],
+    datasets: [{
+        backgroundColor: [
+            '#9a8f92',
+            '#3a405a',
+            '#DC6D18',
+            '#99b2dd',
+            '#7da06a',
+            '#9e2b25',
+            '#db7e6b',
+            '#685044',
+        ],
+        hoverBackgroundColor: [
+            '#9a8f92',
+            '#3a405a',
+            '#DC6D18',
+            '#99b2dd',
+            '#7da06a',
+            '#9e2b25',
+            '#db7e6b',
+            '#685044',
+        ],
+        data: [
+            Number( {{ jpResultsJSON.PercentBuddhism }}) .toFixed(1),
+            Number( {{ jpResultsJSON.PercentChristianity }} ).toFixed(1),
+            Number( {{ jpResultsJSON.PercentEthnicReligions }} ).toFixed(1),
+            Number( {{ jpResultsJSON.PercentHinduism }} ).toFixed(1),
+            Number( {{ jpResultsJSON.PercentIslam }} ).toFixed(1),
+            Number( {{ jpResultsJSON.PercentNonReligious }} ).toFixed(1),
+            Number( {{ jpResultsJSON.PercentOtherSmall }} ).toFixed(1),
+            Number( {{ jpResultsJSON.PercentUnknown }} ).toFixed(1)
+        ],
+    }]
+};
+const config = {
+  type: 'doughnut',
+  data,
+  options: {}
+};
+var myChart = new Chart(
+    document.getElementById('religionDistribution'),
+    config
+  );
+</script>
+

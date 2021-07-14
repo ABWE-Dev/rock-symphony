@@ -1,0 +1,116 @@
+{% assign cc = PageParameter.CountryCode %}
+{% assign cID = PageParameter.Id %}
+{% definedvalue id:'{{cID}}' %}
+
+{% assign commRisk = definedvalue | Attribute:'CommunicationRisk' %}
+{% assign fipsCode = definedvalue | Attribute:'FIPS10-4CountryCode' %}
+{% capture commRiskBackgroundStyle %}
+    {% case commRisk %}
+        {% when 'Unknown' %}
+            background: linear-gradient(45deg, #9bc5c3 0%, #616161 100%)
+        {% when 'Open' %}
+            background: linear-gradient(45deg, #1de9b6 0%, #43A047 100%)
+        {% when 'Cautious' %}
+             background: linear-gradient(45deg, #F3F9A7 0%, #CAC531 100%); color: black
+        {% when 'Restricted' %}
+            background: linear-gradient(45deg, #f5af19 ,#f12711 100%)
+        {% when 'Emergency Only' %}
+            background: linear-gradient(45deg, #ed213a ,#93291e 100%)
+    {% endcase %}
+{% endcapture %}
+
+{% capture stateDeptTravelInfoJSON %}
+    {%  execute import:'RestSharp,Newtonsoft.Json,Newtonsoft.Json.Linq' %}
+        var client = new RestClient("https://travel.state.gov/");
+        var request = new RestRequest("_res/rss/TAsTWs.xml");
+        var response = client.Get(request);
+        var doc = new System.Xml.XmlDocument();
+        doc.LoadXml(response.Content);
+        string countryCode = "{{ fipsCode }}";
+        string xPathString = "//item[category='" + countryCode + "']";
+        System.Xml.XmlNode xmlNode = doc.DocumentElement.SelectSingleNode(xPathString);
+        if (xmlNode == null) {
+            return "{'title':'{{ fipsCode }} - Level 0: Unknown','description':'Not Available'}";
+        }
+        return JsonConvert.SerializeXmlNode(xmlNode);
+    {% endexecute %}
+{% endcapture %}
+{% assign stateDeptTravelInfo = stateDeptTravelInfoJSON | FromJSON | Property:'item' %}
+{% assign stateDeptTravelTitle = stateDeptTravelInfo.title | Split:'-' | Last | Trim %}
+{% assign stateDeptTravelDesc = stateDeptTravelInfo.description | Property:'#cdata-section'  %}
+{% if stateDeptTravelTitle and stateDeptTravelTitle != empty %}
+    {% assign stateDeptTraveLevel = stateDeptTravelTitle | Slice:6 %}
+{% else %}
+    {% assign stateDeptTravelLevel = '0' %}
+{% endif %}
+
+{% capture travelRiskBackgroundStyle %}
+    {% case stateDeptTraveLevel %}
+        {% when '0' %}
+            background: linear-gradient(45deg, #9bc5c3 0%, #616161 100%)
+        {% when '1' %}
+            background: linear-gradient(45deg, #1de9b6 0%, #43A047 100%)
+        {% when '2' %}
+             background: linear-gradient(45deg, #F3F9A7 0%, #CAC531 100%); color: black
+        {% when '3' %}
+            background: linear-gradient(45deg, #f5af19 ,#f12711 100%)
+        {% when '4' %}
+            background: linear-gradient(45deg, #ed213a ,#93291e 100%)
+    {% endcase %}
+{% endcapture %}
+
+<div class="d-flex flex-column flex-sm-row align-items-stretch">
+
+        <div class="badge flex-grow-1 pt-2 pb-2 pl-4 pr-4 m-2" style="{{commRiskBackgroundStyle}}">
+            <div class="d-flex justify-content-between align-items-center">
+                <i class="badge-icon fa fa-comments"></i>
+                <div class="text-right">
+                    <h6 class="mt-0 mb-0 font-weight-light">ABWE Communication Risk</h6>
+                    <h5 class="mt-0 mb-0 ml-1">{{commRisk}}</h5>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="badge btn flex-grow-1 pt-2 pb-2 pl-4 pr-4 m-2" style="{{ travelRiskBackgroundStyle }}" data-toggle="modal" data-target="#StateDeptModal">
+            <div class="d-flex justify-content-between align-items-center">
+                <i class="badge-icon fa fa-plane-departure"></i>
+                <div class="text-right">
+                    <h6 class="mt-0 mb-0 font-weight-light">US State Dept Travel Advisory</h6>
+                    <div class="d-flex align-items-center">
+                        <h5 class="mt-0 mb-0 ml-1">{{ stateDeptTravelTitle }}</h5>
+                        <i class="fa fa-external-link-alt ml-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+<div class="modal fade border modal-lg" id="StateDeptModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h3>US State Department Alerts for {{ definedvalue.Description }}</h3>
+            </div>
+            <div class="modal-body">
+                {{ stateDeptTravelDesc }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-center align-items-center">
+    <img src="https://www.countryflags.io/{{  PageParameter.CountryCode }}/shiny/64.png" style="vertical-align:middle; padding-right:10px">
+    <h1 class="mt-1 mb-1">{{ definedvalue.Description }}</h1>
+</div>
+<div>
+    <iframe title="map" width="100%" height="550" frameborder="0" style="border:0, marginBottom:0" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAG0PS4Vt0bMIx3QqU2RXQDeNSGhV9B0Mg&amp;q={{ definedvalue.Description }}" allowfullscreen=""></iframe>
+</div>
+
+{% enddefinedvalue %}
+
+
