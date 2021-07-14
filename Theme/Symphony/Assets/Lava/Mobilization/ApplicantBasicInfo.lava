@@ -1,0 +1,26 @@
+    {% assign applicant = workflow | Attribute:'Applicant','Id' | PersonById %}
+    {% assign applicantManagementStatus = workflow | Attribute:'ApplicantManagementWorkflow','Status' %}
+    <h1 class="mt-0">{{ applicant.FullName }}</h1>
+    {% assign badgeColor = 'bg-success' %}
+    {% if applicantManagementStatus == 'Locked' %}
+        {% assign badgeColor = 'bg-danger' %}
+    {% elseif applicantManagementStatus == 'Closed' or workflow.Status == 'Withdrew' %}
+        {% assign badgeColor = 'bg-dark' %}
+    {% elseif applicantManagementStatus == 'Snoozed' or workflow.Status == 'Lapsed' %}
+        {% assign badgeColor = 'bg-warning' %}
+    {% endif %}
+    
+    <div class="d-flex justify-content-center"><span class="badge {{ badgeColor }}">{{ applicantManagementStatus }}</span></div>
+    <div class="photo">
+        <img src="{{ applicant.PhotoUrl }}" class="img-responsive" />
+    </div>
+    <div>
+        {{ applicant | Address:'Home','[[FormattedHtmlAddress]]' }}
+    </div>
+    <div class="mt-3">
+        {{ applicant.PhoneNumbers }}
+    </div>
+    <div class="mt-3">
+        {{ applicant.Email }}
+    </div>
+

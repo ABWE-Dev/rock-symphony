@@ -1,0 +1,90 @@
+{% workflow id:'{{ PageParameter["WorkflowId"] }}' %}
+    {% assign numCompleted = workflow | Attribute:'NumberOfCompletedModules' | AsInteger %}
+    {% assign assignedModules = workflow | Attribute:'AssignedModules' %}
+    {% if assignedModules and assignedModules != empty %}
+        {% assign numRemaining = assignedModules | Split:',' | Size  %}
+    {% else %}
+        {% assign numRemaining = 0 %}
+    {% endif %}
+    {% assign totalModules = numCompleted | Plus:numRemaining %}
+    
+    {% for a in workflow.Activities %}
+        {% if a.ActivityType.Name == "Start Applying" %}
+            {% assign timeCommitment =  a | Attribute:'TimeCommitment' %}
+            {% assign lengthOfService = a | Attribute:'LengthOfService' %}
+            {% assign supportNeeds =    a | Attribute:'SupportNeeds' %}
+            {% assign travel =          a | Attribute:'InternationalTravel' %}
+            {% assign citizenship =     a | Attribute:'Citizenship' %}
+            {% assign yourMinistry =    a | Attribute:'YourMinistry' %}
+            {% assign areasOfInterest = a | Attribute:'AreasOfInterest' | Split:',' %}
+            {% break %}
+        {% endif %}
+    {% endfor %}
+    
+    <div class="panel panel-block">
+        <div class="list-as-blocks clearfix">
+            <ul>
+                <li class="d-flex align-items-center flex-column">
+                    <h6 style="text-align:center">Time Commitment</h6>
+                    <i class="fa fa-user-clock fa-2x"></i>
+                    <p style="text-align:center">{{ timeCommitment }}</p>
+                </li>
+                <li class="d-flex align-items-center flex-column">
+                    <h6 style="text-align:center">Length of Service</h6>
+                    <i class="fa fa-calendar-week fa-2x"></i>
+                    <p style="text-align:center">{{ lengthOfService }}</p>
+                </li>
+                <li class="d-flex align-items-center flex-column">
+                    <h6 style="text-align:center">Fundraising</h6>
+                    {% assign isRaisingFunds = supportNeeds | Default:'No' | Slice:0,2 %}
+                    {% if isRaisingFunds == 'No' %}
+                        <i class="fa fa-window-close fa-2x"></i>
+                    {% else %}
+                        <i class="fa fa-comments-dollar fa-2x"></i>
+                    {% endif %}
+                    <p style="text-align:center">{{ supportNeeds }}</p>
+                </li>
+                <li class="d-flex align-items-center flex-column">
+                    <h6 style="text-align:center">Travel</h6>
+                    {% assign isTraveling = travel | Default:'No' | Slice:0,2 %}
+                    {% if isTraveling == 'No' %}
+                        <i class="fa fa-plane-slash fa-2x"></i>
+                    {% else %}
+                        <i class="fa fa-plane-departure fa-2x"></i>
+                    {% endif %}
+                    <p style="text-align:center">{{ travel }}</p>
+                </li>
+                <li class="d-flex align-items-center flex-column">
+                    <h6 style="text-align:center">Citizenship</h6>
+                    {% if citizenship == 'US' %}
+                        <i class="fa fa-flag-usa fa-2x"></i>
+                    {% elseif citizenship == 'Canada' %}
+                        <i class="fa fa-canadian-maple-leaf fa-2x"></i>
+                    {% else %}
+                        <i class="fa fa-globe fa-2x"></i>
+                    {% endif %}
+                    <p style="text-align:center">{{ citizenship }}</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row ml-3 mr-3">
+        <div class="col-sm-5 panel panel-block pl-3 pr-3">
+            <h5>Areas of Interest</h5>
+            <ul>
+                {% for aoi in areasOfInterest %}
+                    <li>{{ aoi }}</li>
+                {% endfor %}
+            </ul>    
+        </div>
+        <div class="col-sm-1"></div>
+        <div  class="col-sm-6 panel panel-block pl-3 pr-3">
+            <h5>Description of specific ministry with Live Global</h5>
+            {% if yourMinistry and yourMinistry != empty %}
+                <p>{{ yourMinistry }}</p>
+            {% else %}
+                <p><i>no information provided</i></p>
+            {% endif %}
+        </div>
+    </div>
+{% endworkflow %}

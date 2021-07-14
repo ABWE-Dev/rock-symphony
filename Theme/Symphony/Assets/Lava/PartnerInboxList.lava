@@ -1,0 +1,64 @@
+{% assign puciURL='~/PartnerUpdateChannelItem?ContentItemId=0&ContentChannelId=9' | ResolveRockUrl %}
+
+<div class="panel panel-block">
+    <div class="panel-heading">
+        <i class="fa fa-newspaper"></i><h1 class="panel-title pull-left ml-2">Unassigned Partner Updates</h1>
+        <a class="btn btn-xs btn-action btn-square" href='{{ puciURL }}'>
+            <i class="fa fa-plus"></i>
+        </a>
+    </div>
+    <div class="panel-body">
+{% for item in Items %}
+  {%- assign itemPrimarySlug = item.PrimarySlug | Trim -%}
+  {%- if LinkedPages.DetailPage contains '{Slug}' and itemPrimarySlug != '' -%}
+    {%- assign itemLink = LinkedPages.DetailPage | Replace:'{Slug}',item.PrimarySlug | Prepend:'/' -%}
+  {%- else -%}
+    {%- if LinkedPages.DetailPage contains '{Slug}' -%}
+      {%- assign itemLink = LinkedPages.DetailPage | Replace:'{Slug}',item.Id | Prepend:'/' -%}
+    {%- else -%}
+      {%- capture itemLink -%}{{ LinkedPages.DetailPage }}?Item={{ item.Id }}{%- endcapture -%}
+    {%- endif -%}
+  {%- endif -%}
+        <div class="row margin-b-lg">
+            <div class="col-md-6">
+                <a href="{{ itemLink }}" >{{ item.Title }}</a>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ itemLink }}" >{{ item | Attribute:'SenderEmailAddress' }}</a>
+            </div>
+            <div class="col-md-3">
+                <span>{{ item.StartDateTime | Trim }}</span>
+            </div>
+        </div>
+{% endfor %}
+    </div>
+
+
+    <div class="clearfix">
+        {% assign nextPageString = Pagination.NextPage | ToString %}
+        {% assign prevPageString = Pagination.PreviousPage | ToString %}
+  
+        {% if Pagination.PreviousPage != -1 or Pagination.NextPage != -1 %}
+
+        {% if Pagination.PreviousPage == -1 %}
+        <div class="btn btn-default pull-left">
+            <i class="fa fa-chevron-left"></i> Prev
+        </div>
+        {% else %}
+        <a class="btn btn-primary pull-left" href="{{ Pagination.UrlTemplate | Replace:'PageNum', prevPageString }}">
+            <i class="fa fa-chevron-left"></i> Prev
+        </a>
+        {% endif %}
+
+        {% if Pagination.NextPage == -1 %}
+        <div class="btn btn-default pull-right">
+            Next <i class="fa fa-chevron-right"></i>
+        </div>
+        {% else %}
+        <a class="btn btn-primary pull-right" href="{{ Pagination.UrlTemplate | Replace:'PageNum', nextPageString }}">
+            Next <i class="fa fa-chevron-right"></i>
+        </a>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
