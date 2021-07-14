@@ -1,0 +1,73 @@
+{% assign accountName = 'lg_account_balances' | PersistedDataset | Where:'project_id',financialAccountId | Select:'account_name' | First  %}
+{% assign balance = 'lg_account_balances' | PersistedDataset | Where:'project_id',financialAccountId | Select:'project_balance' | First | AsDouble %}
+{% assign balanceTimeSeries = balance | ToString %}
+{% assign monthLabels = 'Now' | Date:'MMM' %}
+{% assign b = balance %}
+{% webrequest url:'https://lg.abwe.org/?key=21307001067275&query=accountincomeexpensesbymonth&id={{financialAccountId}}' %}
+    {% assign cashflows = results | Select:'NetMonthly' %}
+    {% for cashflow in cashflows reversed %}
+        {% assign cf = cashflow | AsDouble %}
+        {% assign b = b | Minus:cf %}
+        {% assign bStr = b | ToString %}
+        {% assign balanceTimeSeries = balanceTimeSeries | Prepend:',' | Prepend:bStr %}
+        {% assign mCtr = 0 | Minus:forloop.index %}
+        {% assign m = 'Now' | DateAdd:mCtr,'M' | Date:'MMM' %}
+        {% assign monthLabels = monthLabels | Prepend:"','" | Prepend: m %}
+        {% if forloop.index == 11 %}
+            {% break %}
+        {% endif %}
+    {% endfor %}
+    {% assign monthLabels = monthLabels | Append:"'" | Prepend:"'" %}
+    {% assign credits = results | Select:'CreditTotal' %}
+    {% assign debits = results | Select:'DebitTotal' %}
+    {% for credit in credits reversed %}
+        {% assign creditTimeSeries = creditTimeSeries | Prepend:',' | Prepend:credit %}
+        {% if forloop.index == 11 %}
+            {% break %}
+        {% endif %}
+    {% endfor %}
+    {% for debit in debits reversed %}
+        {% assign debitTimeSeries = debitTimeSeries | Prepend:',-' | Prepend:debit %}
+        {% if forloop.index == 11 %}
+            {% break %}
+        {% endif %}
+    {% endfor %}
+    {% assign debitTimeSeries = debitTimeSeries | Prepend:'-' %}
+{% endwebrequest %}
+<div id="cashflow" class="d-flex justify-content-between" style="padding-top:100px;margin-top:-80px">
+    <h3 >Cashflow History for {{ accountName }}</h3>
+    <div>
+        <a class="btn btn-primary" href="#donorList" role="button">Donors</a>
+        <a class="btn btn-primary" href="#transactionList" role="button">Transactions</a>    
+    </div>
+</div>
+<div>
+    <canvas id="finSummaryTimeSeries"></canvas>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var myChart = new Chart(
+    document.getElementById('finSummaryTimeSeries'), {
+    data : {
+    labels:  [{{ monthLabels }}],
+    datasets: [{
+    type:'line',
+    label:'Balance (EOM)',
+    backgroundColor:'rgba(0,0,0,0.8)',
+    borderColor:'rgba(0,0,0,0.4)',
+    data:[{{ balanceTimeSeries }}]
+    }, {
+    type:'bar',
+    label:'Credit',
+    backgroundColor:'#1b9e39',
+    data:[{{ creditTimeSeries }}]
+    }, {
+    type:'bar',
+    label:'Debit',
+    backgroundColor:'#9e2b25',
+    data:[{{ debitTimeSeries }}]
+    }]
+    },
+    options:{}
+    });
+</script>

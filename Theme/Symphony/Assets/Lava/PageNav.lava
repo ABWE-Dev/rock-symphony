@@ -2,12 +2,12 @@
     <ul class="nav nav-stacked navbar-side">
         <li class="navbar-logo">
         {%- if CurrentPage.Layout.Site.SiteLogoBinaryFileId != null -%}
-            {% comment %}WARNING!!! hard coded page ID{% endcomment %}
-            <a href="667" title="Symphony" class="navbar-brand-side has-logo">
+            {% comment %}WARNING!!! hard coded page ID{% endcomment %}<div>a<div>
+            <a href="~/SymphonyHome" title="Symphony" class="navbar-brand-side has-logo">
                 <img src="{{ '~' | ResolveRockUrl }}GetImage.ashx?id={{ CurrentPage.Layout.Site.SiteLogoBinaryFileId }}&w=48&h=48" alt="Live Global" class="logo">
             </a>
-        {%- else -%}
-            <a href="{{ '~' | ResolveRockUrl }}" title="Symphony" class="navbar-brand-side no-logo"></a>
+        {%- else -%}<div>b<div>
+            <a href="~/SymphonyHome" title="Symphony" class="navbar-brand-side no-logo"></a>
         {%- endif -%}
         </li>
 		{%- for childPage in Page.Pages -%}
@@ -32,7 +32,12 @@
                                     {%- else -%}
                                         <li>
                                     {%- endif -%}
+                                    {% if greatgrandchildPage.Title == 'Advanced Editor' %}
+                                        {% comment %}STUPID HACK to get around limitation in the WorkflowTypeDetail block that only takes a PageParameter to specify workflow type{% endcomment %}
+                                        <a role="menu-item" href="{{ greatgrandchildPage.Url }}?workflowTypeId=32">{{ greatgrandchildPage.Title }}</a>
+                                    {% else %}
                                         <a role="menu-item" href="{{ greatgrandchildPage.Url }}">{{ greatgrandchildPage.Title }}</a>
+                                    {% endif %}
                                     </li>
                                 {%- endfor -%}
                             {%- endif -%}

@@ -1,0 +1,131 @@
+<!-- Partnership Details -->
+{% for member in Group.Members %} 
+    {% if member.GroupRole.Name == 'Primary Partner Contact'%}
+        {% for m in member.Person.Members %}
+            {% if m.Group.GroupTypeId == 10 %}
+                {% assign family = m.Group %}
+                {% break %}
+            {% endif %}
+        {% endfor %} 
+        {% break %}
+    {% endif %}
+{% endfor %}
+{% assign isNamesDisplayOK = Group | Attribute:'NamesSecurity' %}
+{% assign isFacessDisplayOK = Group | Attribute:'FacesSecurity' %}
+{% assign isLocationDisplayOK = Group | Attribute:'LocationSecurity' %}
+
+<div class="row pb-1">
+    <div class="col-md-4 pb-2">
+        {% if isNamesDisplayOK == 'Safe to publish' %}
+            <div class="badge p-2 w-100" style="background:var(--brand-success);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="badge-icon fa fa-user-tag"></i>
+                    <div class="text-right">
+                        <h6 class="mt-0 mb-0 font-weight-light">Safe to use</h6>
+                        <h5 class="mt-0 mb-0 ml-1">Real names</h5>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="badge p-2 w-100" style="color:white;background-color:var(--brand-danger);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="badge-icon fa fa-user-tag"></i>
+                    <div class="text-right">
+                        <h6 class="mt-0 mb-0 font-weight-light">Do NOT publish</h6>
+                        <h5 class="mt-0 mb-0 ml-1">Real names</h5>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4 pb-2">
+        {% if isFacessDisplayOK == 'Safe to publish' %}
+            <div class="badge p-2 w-100" style="background:var(--brand-success);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="badge-icon fa fa-portrait"></i>
+                    <div class="text-right">
+                        <h6 class="mt-0 mb-0 font-weight-light">Safe to use</h6>
+                        <h5 class="mt-0 mb-0 ml-1">Pictures with faces</h5>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="badge p-2 w-100" style="color:white;background-color:var(--brand-danger);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="badge-icon fa fa-portrait"></i>
+                    <div class="text-right">
+                        <h6 class="mt-0 mb-0 font-weight-light">Do NOT publish</h6>
+                        <h5 class="mt-0 mb-0 ml-1">Pictures with faces</h5>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-4 pb-2">
+        {% if isLocationDisplayOK == 'Safe to publish' %}
+            <div class="badge p-2 w-100" style="background:var(--brand-success);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="badge-icon fa fa-map-marker-alt"></i>
+                    <div class="text-right">
+                        <h6 class="mt-0 mb-0 font-weight-light">Safe to publish</h6>
+                        <h5 class="mt-0 mb-0 ml-1">Locations</h5>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="badge p-2 w-100" style="color:white;background-color:var(--brand-danger);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <i class="badge-icon fa fa-map-marker-alt"></i>
+                    <div class="text-right">
+                        <h6 class="mt-0 mb-0 font-weight-light">Do NOT publish</h6>
+                        <h5 class="mt-0 mb-0 ml-1">Detailed locations</h5>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
+{% assign partnerPhotoURL = Group | Attribute:'Photo', 'RawValue' | ImageUrl %}
+{% assign familyPhotoURL = family | Attribute:'FamilyPhoto', 'RawValue' | ImageUrl %}
+
+
+<div class="row">
+    <div class="col-md-6">
+        <dl>        
+            {% if Group.Description != '' -%}
+                <dt>Primary Ministry:</dt>
+                <dd>{{ Group.Description }}</dd>
+            {% endif -%}
+
+
+            {% if partnerPhotoURL != '' %}
+                <dd>{{ Group | Attribute:'Photo' }}</dd>
+            {% elseif familyPhotoURL != '' %}
+                <dd>{{ family | Attribute:'FamilyPhoto' }}</dd>
+            {% else %}
+                <div style="font-size: 8em;">
+                    <i class="fa fa-user-friends"></i> 
+                </div>
+            {% endif %}
+        </dl>
+    </div>
+    <div class="col-md-6">
+        <dl>
+            <dt>Legal Agreement Type:</dt>
+            <dd>{{ Group | Attribute:'LegalAgreementType' }}</dd>
+            <dt>Public URL:</dt>
+            <dd>{{ Group | Attribute:'PulbicURL' }}</dd>
+            <dt>Primary Country of Service:</dt>
+            <dd>{{ Group | Attribute:'PrimaryCountryOfService' }}</dd>
+            <dt>Secondary Countries of Service</dt>
+            <dd>{{ Group | Attribute:'SecondaryCountries' }}</dd>
+            <dt>Description</dt>
+            <dd>{{ Group | Attribute:'MinistryDescription' }}</dd>
+        </dl>
+    </div>
+</div>
+<a class="btn btn-primary" href="/EditPartnerFamily/{{ family.Id }}" role="button">Edit Partner Family</a>
+
+       

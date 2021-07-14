@@ -1,0 +1,40 @@
+{% assign accountName = 'lg_account_balances' | PersistedDataset | Where:'project_id',financialAccountId | Select:'account_name' | First  %}
+<div id="donorList" class="d-flex justify-content-between" style="padding-top:100px">
+    <h3 >Donors for {{ accountName }} (past 90 days)</h3>
+    <div>
+        <a class="btn btn-primary" href="#cashflow" role="button">Cashflow Chart</a>
+        <a class="btn btn-primary" href="#transactionList" role="button">Transactions</a>
+    </div>
+</div>
+<table class="grid-table table table-bordered table-striped" >
+    <thead>
+        <tr>
+            <th>Donor Name</th>
+            <th>Total Given</th>
+            <th>Avg Donation</th>
+            <th>Date of Last Donation</th>
+            <th>Committed Supporter</th>
+            <th>Address</th>
+        </tr>
+    </thead>
+{% webrequest url:'https://lg.abwe.org/?key=21307001067275&query=accountdonoroverivew&id={{financialAccountId}}' %}
+    {% for donor in results %}
+        <tr align="left">
+            <td>{{ donor.Name }}</td>
+            <td>${{ donor.Total | AsDouble| Format:'#,##0.00' }}</td>
+            <td>${{ donor.Average | AsDouble | Format:'#,##0.00' }}</td>
+            <td>{{ donor.Last.date | Date:'M/d/yyyy' }}</td>
+            <td>
+                {% if donor.SupporterType == "CommittedSupporter %}
+                    <i class="fa fa-retweet"></i> 
+                {% endif %}
+            </td>
+            <td>
+                <div>{{ donor.AddressLine1 }}</div>
+                <div>{{ donor.AddressLine2 }}</div>
+                <div>{{ donor.City }}, {{ donor.State }}  {{ donor.ZipPostal }}</div>
+            </td>
+        </tr>
+    {% endfor %}
+{% endwebrequest %}
+</table>

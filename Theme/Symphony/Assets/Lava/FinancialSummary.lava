@@ -1,0 +1,50 @@
+{% comment %} REQUIRED INPUT: financialAccountId {% endcomment %}
+
+{% assign balance = 'lg_account_balances' | PersistedDataset | Where:'project_id',financialAccountId | Select:'project_balance' | First | AsDouble %}
+{% webrequest url:'https://lg.abwe.org/?key=21307001067275&query=supportercount&id={{financialAccountId}}' %}
+{% assign supporterCount =  results | Select:'count' %}
+{% endwebrequest %}
+
+{% capture balanceTS %}
+{% cache key:'balance_timeseries_{{ financialAccountId }}' duration:'3600' tags:'lg_financial_cache' %}
+{% assign balanceTimeSeries = balance | ToString %}
+{% assign b = balance %}
+{% webrequest url:'https://lg.abwe.org/?key=21307001067275&query=accountincomeexpensesbymonth&id={{financialAccountId}}' %}
+    {% assign cashflows = results | Select:'NetMonthly' %}
+    {% for cashflow in cashflows reversed %}
+        {% assign cf = cashflow | AsDouble %}
+        {% assign b = b | Minus:cf %}
+        {% assign bStr = b | ToString %}
+        {% assign balanceTimeSeries = balanceTimeSeries | Prepend:',' | Prepend:bStr %}
+        {% if forloop.index == 11 %}
+            {% break %}
+        {% endif %}
+    {% endfor %}
+    {{ balanceTimeSeries }}
+{% endwebrequest %}
+{% endcache %}
+{% endcapture %}
+
+<a class="clickable-panel" href="~/FinancialDetails?financialAccountId={{ financialAccountId }}">
+    <div class="panel panel-block">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <i class="fa fa-hand-holding-usd"></i>
+                Financial Summary
+            </h4>
+            <h1 class="panel-title pull-left ml-2"></h1>
+        </div>
+        <div class="panel-body">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5>Balance: ${{ balance | Format:'#,##0.00' }}</h5>
+                {[ sparkline type:'line' data:balanceTS ]}
+            </div>
+            <h5>Number of Supporters: {{ supporterCount }}</h5>
+        </div>
+        <div style="text-align:center">
+            <i>Click for more details</i>
+        </div>
+    </div>
+</a>
+
+

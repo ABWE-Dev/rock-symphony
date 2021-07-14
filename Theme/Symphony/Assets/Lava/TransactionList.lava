@@ -1,0 +1,35 @@
+{% assign accountName = 'lg_account_balances' | PersistedDataset | Where:'project_id',financialAccountId | Select:'account_name' | First  %}
+<div id="transactionList" class="d-flex justify-content-between" style="padding-top:100px">
+    <h3 >Transactions for {{ accountName }} (past 90 days)</h3>
+    <div>
+        <a class="btn btn-primary" href="#cashflow" role="button">Cashflow Chart</a>
+        <a class="btn btn-primary" href="#donorList" role="button">Donors</a>
+    </div>
+</div>
+<table class="grid-table table table-bordered table-striped" >
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    {% assign endDate = 'Now' | Date:'yyyyMMdd' %}
+    {% assign startDate = 'Now' | DateAdd:-90,'d' | Date:'yyyyMMdd' %}
+    {% webrequest url:'https://lg.abwe.org/?key=21307001067275&query=monthlytransactions&id={{financialAccountId}}&start={{startDate}}&end={{endDate}}' %}
+    {% for tx in results %}
+    <tr align="left">
+        <td>{{ tx.Date.date | Date:'M/d/yyyy' }}</td>
+        <td>
+            {% if tx.DonorName and tx.DonorName != empty %}
+                {{ tx.DonorName }}
+            {% else %}
+                {{ tx.AccountingDesc }}
+            {% endif %}
+        </td>
+        {% assign amt = tx.Amount | AsDouble %}
+        <td style={% if amt > 0 %}"color:green"{% else %}"color:red"{% endif %}>${{ amt | Format:'#,##0.00' }}</td>
+    </tr>
+    {% endfor %}
+    {% endwebrequest %}
+</table>
