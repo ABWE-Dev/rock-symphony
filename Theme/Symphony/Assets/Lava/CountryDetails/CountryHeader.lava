@@ -107,10 +107,6 @@
     <img src="https://www.countryflags.io/{{  PageParameter.CountryCode }}/shiny/64.png" style="vertical-align:middle; padding-right:10px">
     <h1 class="mt-1 mb-1">{{ definedvalue.Description }}</h1>
 </div>
-<div>
-    <iframe title="map" width="100%" height="550" frameborder="0" style="border:0, marginBottom:0" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAG0PS4Vt0bMIx3QqU2RXQDeNSGhV9B0Mg&amp;q={{ definedvalue.Description }}" allowfullscreen=""></iframe>
-</div>
-
 {% enddefinedvalue %}
 
 
