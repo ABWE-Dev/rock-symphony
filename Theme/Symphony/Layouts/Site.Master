@@ -63,11 +63,11 @@
                 </div>
                 <Rock:Lava ID="hlHomeCorner" runat="server">
                     {%- if CurrentPage.Layout.Site.SiteLogoBinaryFileId != null -%}
-                        <a href="SymphonyHome" title="Symphony" class="navbar-brand-corner has-logo">
+                        <a href="{{ '~' | ResolveRockUrl }}SymphonyHome" title="Symphony" class="navbar-brand-corner has-logo">
                             <img src="{{ '~' | ResolveRockUrl }}GetImage.ashx?id={{ CurrentPage.Layout.Site.SiteLogoBinaryFileId }}&w=42&h=42" alt="Live Global" class="logo">
                         </a>
                     {%- else -%}
-                        <a href="{{ '~' | ResolveRockUrl }}" title="Symphony" class="navbar-brand-corner no-logo"></a>
+                        <a href="{{ '~' | ResolveRockUrl }}SymphonyHome" title="Symphony" class="navbar-brand-corner no-logo"></a>
                     {%- endif -%}
                 </Rock:Lava>
 

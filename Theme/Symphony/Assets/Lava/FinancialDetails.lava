@@ -47,27 +47,28 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     var myChart = new Chart(
-    document.getElementById('finSummaryTimeSeries'), {
-    data : {
-    labels:  [{{ monthLabels }}],
-    datasets: [{
-    type:'line',
-    label:'Balance (EOM)',
-    backgroundColor:'rgba(0,0,0,0.8)',
-    borderColor:'rgba(0,0,0,0.4)',
-    data:[{{ balanceTimeSeries }}]
-    }, {
-    type:'bar',
-    label:'Credit',
-    backgroundColor:'#1b9e39',
-    data:[{{ creditTimeSeries }}]
-    }, {
-    type:'bar',
-    label:'Debit',
-    backgroundColor:'#9e2b25',
-    data:[{{ debitTimeSeries }}]
-    }]
-    },
-    options:{}
+        document.getElementById('finSummaryTimeSeries'), {
+        data : {
+            labels:  [{{ monthLabels }}],
+            datasets: [{
+                type:'line',
+                label:'Balance (EOM)',
+                backgroundColor:'rgba(0,0,0,0.8)',
+                borderColor:'rgba(0,0,0,0.4)',
+                data:[{{ balanceTimeSeries }}]
+            }, {
+                type:'bar',
+                label:'Credit',
+                backgroundColor:'#1b9e39',
+                data:[{{ creditTimeSeries }}]
+            }, {
+                type:'bar',
+                label:'Debit',
+                backgroundColor:'#9e2b25',
+                data:[{{ debitTimeSeries }}]
+            }]
+        },
+        options:{}
     });
 </script>
+
